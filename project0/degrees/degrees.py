@@ -70,7 +70,6 @@ def main():
         sys.exit("Person not found.")
 
     path = shortest_path(source, target)
-
     if path is None:
         print("Not connected.")
     else:
