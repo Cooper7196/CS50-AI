@@ -11,6 +11,9 @@ board = result(board, (0, 1))
 
 print(board)
 
-board = [[X,X,X],[X,X,X],[X,X,None]]
+board = [[None,O,X],[None,O,O],[X,X,O]]
 
 print(terminal(board))
+print(board)
+print(f"Winner: {winner(board)}")
+print(f"Utility: {utility(board)}")

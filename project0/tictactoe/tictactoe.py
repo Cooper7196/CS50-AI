@@ -58,23 +58,51 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
+
+    #Check if any rows has only Xs or Os
+    for row in board:
+        if set(row) == set(X):
+            return X
+        elif set(row) == set(O):
+            return O
+
+    #Check if any columns has only Xs or Os
+    for column in range(len(board)):
+        columnSet = set([board[row][column] for row in range(len(board[0]))])
+        if columnSet == set(X):
+            return X
+        elif columnSet == set(O):
+            return O
+   
+    #Check if any diagonals has only Xs or Os
+    diagonalTopLeftToRight = set([board[i][i] for i in range(len(board))])
+    if diagonalTopLeftToRight == set(X):
+        return X
+    elif diagonalTopLeftToRight == set(O):
+        return O
     
-    raise NotImplementedError
+    diagonalBottomLeftToRight = set([board[(len(board) - 1) - i][i] for i in range(len(board) - 1, -1, -1)])
+    if diagonalBottomLeftToRight == set(X):
+        return X
+    elif diagonalBottomLeftToRight == set(O):
+        return O
+
+    return None
 
 
 def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    return all([None not in row for row in board])
-    raise NotImplementedError
+    return all([None not in row for row in board]) or winner(board) is not None
 
 
 def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    raise NotImplementedError
+    
+    return 0 if winner(board) == None else 1 if winner(board) == X else -1
 
 
 def minimax(board):
