@@ -1,19 +1,8 @@
 from tictactoe import *
 
-board = [[None, None, None], [None, None, None], [None, None, None]]
+board = initial_state()
+board = [[X, X, EMPTY], [EMPTY, EMPTY, EMPTY],[EMPTY, EMPTY, O]]
+# while True:
 print(board)
-
-board = result(board, (0, 0))
-
-print(board)
-
-board = result(board, (0, 1))
-
-print(board)
-
-board = [[None,O,X],[None,O,O],[X,X,O]]
-
-print(terminal(board))
-print(board)
-print(f"Winner: {winner(board)}")
-print(f"Utility: {utility(board)}")
+print(minimax_value(board))
+board = result(board, minimax(board))
