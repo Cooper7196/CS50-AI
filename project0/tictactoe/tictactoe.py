@@ -13,7 +13,7 @@ def initial_state():
     """
     Returns starting state of the board.
     """
-    return [[X, X, EMPTY], [EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, O]]
+    return [[EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY]]
     # return [[EMPTY, EMPTY, EMPTY],
     #         [EMPTY, EMPTY, EMPTY],
     #         [EMPTY, EMPTY, EMPTY]]
@@ -137,11 +137,32 @@ def minimax(board):
     """
     Returns the value of optimal action for the current player on the board.
     """
+    currentPlayer = player(board)
+
+    bestValue = float("-inf") if currentPlayer == X else float("inf")
+    bestAction = None
+
+    for action in actions(board):
+        value = minimax_value(result(board, action))
+        if currentPlayer == X:
+            if value > bestValue:
+                bestValue = value
+                bestAction = action
+        else:
+            if value < bestValue:
+                bestValue = value
+                bestAction = action
+    return bestAction
+
+
 def minimax_value(board):
     """
     Returns value of the board.
     """
     
+    if terminal(board):
+        return utility(board)
+
     currentPlayer = player(board)
     
     bestValue = float("-inf") if currentPlayer == X else float("inf")
