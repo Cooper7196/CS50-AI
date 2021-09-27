@@ -9,6 +9,10 @@ O = "O"
 EMPTY = None
 
 
+class InvalidMoveException(Exception):
+    pass
+
+
 def initial_state():
     """
     Returns starting state of the board.
@@ -52,6 +56,11 @@ def result(board, action):
     """
 
     newBoard = copy.deepcopy(board)
+    try:
+        if newBoard[action[0]][action[1]]:
+            raise InvalidMoveException("That space is already taken.")
+    except IndexError:
+        raise InvalidMoveException("That space is invalid.")
     newBoard[action[0]][action[1]] = player(board)
     return newBoard
 
@@ -108,35 +117,14 @@ def utility(board):
     return 0 if winner(board) is None else 1 if winner(board) == X else -1
 
 
-def min_value(board):
-    """
-    Returns the action with smallest score for the current state board.
-    """
-    idealMoveScore = float("inf")
-    if terminal(board):
-        return utility(board)
-    for action in actions(board):
-        idealMoveScore = min(idealMoveScore, max_value(result(board, action)))
-    return idealMoveScore
-
-
-def max_value(board):
-    """
-    Returns the action with smallest score for the current state board.
-    """
-    idealMoveScore = float("-inf")
-    if terminal(board):
-        return utility(board)
-    for action in actions(board):
-        idealMoveScore = max(idealMoveScore, min_value(result(board, action)))
-    return idealMoveScore
-
-
 def minimax(board):
-
     """
     Returns the value of optimal action for the current player on the board.
     """
+
+    if board == initial_state():
+        return (0, 1)
+
     currentPlayer = player(board)
 
     bestValue = float("-inf") if currentPlayer == X else float("inf")
@@ -159,14 +147,13 @@ def minimax_value(board):
     """
     Returns value of the board.
     """
-    
     if terminal(board):
         return utility(board)
 
     currentPlayer = player(board)
-    
+
     bestValue = float("-inf") if currentPlayer == X else float("inf")
-    
+
     for action in actions(board):
         value = minimax_value(result(board, action))
         if currentPlayer == X:
