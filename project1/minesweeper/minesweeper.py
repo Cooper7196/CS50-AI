@@ -109,7 +109,6 @@ class Sentence():
             return self.cells
         return set()
 
-
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
@@ -199,11 +198,13 @@ class MinesweeperAI():
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if (i, j) != (0, 0):
-                    if (cell[0] + i >= 0 and cell[0] + i < self.height):
-                        if (cell[1] + j >= 0 and cell[1] + j < self.width):
-                            adjacentPlaces.append((cell[0] + i, cell[1] + j))
-        print(f"{adjacentPlaces}, {self.height}, {self.width}")
-        self.knowledge.append(Sentence(adjacentPlaces, count))
+                    if (0 <= cell[0] + i < self.height and 0 <=
+                            cell[1] + j < self.width):
+                        adjacentPlaces.append((cell[0] + i, cell[1] + j))
+
+        # print(f"{adjacentPlaces}, {self.height}, {self.width}")
+        newSentence = Sentence(adjacentPlaces, count)
+        self.knowledge.append(newSentence)
 
         tempSafeSpots = []
         tempMineSpots = []
@@ -212,6 +213,7 @@ class MinesweeperAI():
             for safeSpot in sentence.known_safes():
                 tempSafeSpots.append(safeSpot)
             for mineSpot in sentence.known_mines():
+                print(f"Because {sentence}, {mineSpot} is a mine.")
                 tempMineSpots.append(mineSpot)
 
         for safeSpot in tempSafeSpots:
@@ -219,8 +221,26 @@ class MinesweeperAI():
         for mineSpot in tempMineSpots:
             self.mark_mine(mineSpot)
 
+        for sentence1 in self.knowledge:
+            if sentence1 is not newSentence:
+                if newSentence.cells.issubset(sentence1.cells):
+                    newSentenceCells = set(
+                        [i for i in sentence1.cells if i not in newSentence.cells])
+                    newSentenceCount = sentence1.count - newSentence.count
+                    if len(
+                            newSentenceCells) > 1 and newSentenceCells not in [i.cells for i in self.knowledge]:
+                        print(len(self.knowledge))
+                        self.knowledge.append(
+                            Sentence(
+                                newSentenceCells,
+                                newSentenceCount))
 
     def make_safe_move(self):
+        #!Change Font Path
+        #!Change Font Path
+        #!Change Font Path
+
+
         """
         Returns a safe cell to choose on the Minesweeper board.
         The move must be known to be safe, and not already a move
@@ -231,7 +251,8 @@ class MinesweeperAI():
         """
         for safeSpot in self.safes:
             if safeSpot not in self.moves_made:
-                print(f"{safeSpot}\n")
+                print(f"\nMove made: {safeSpot}")
+                print(f"Known Mines: {self.mines}")
                 return safeSpot
         return None
 
@@ -242,7 +263,15 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
+        options = []
         for h in range(self.height):
             for w in range(self.width):
                 if (h, w) not in self.mines and (h, w) not in self.moves_made:
-                    return (h, w)
+                    options.append((h, w))
+        if len(options) > 0:
+            moveChoice = random.choice(options)
+            print(f"\nMove made: {moveChoice}")
+            print(f"Known Mines: {self.mines}")
+            return moveChoice
+        else:
+            return None
