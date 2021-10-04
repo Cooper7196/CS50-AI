@@ -20,7 +20,6 @@ screen = pygame.display.set_mode(size)
 
 # Fonts
 OPEN_SANS = "assets/fonts/OpenSans-Regular.ttf"
-# OPEN_SANS = "project1/minesweeper/assets/fonts/OpenSans-Regular.ttf" #!Remove before submit
 smallFont = pygame.font.Font(OPEN_SANS, 20)
 mediumFont = pygame.font.Font(OPEN_SANS, 28)
 largeFont = pygame.font.Font(OPEN_SANS, 40)
@@ -34,12 +33,8 @@ board_origin = (BOARD_PADDING, BOARD_PADDING)
 
 # Add images
 flag = pygame.image.load("assets/images/flag.png")
-# flag = pygame.image.load("project1/minesweeper/assets/images/flag.png") #!Remove before submit
-
 flag = pygame.transform.scale(flag, (cell_size, cell_size))
 mine = pygame.image.load("assets/images/mine.png")
-# mine = pygame.image.load("project1/minesweeper/assets/images/mine.png") #!Remove before submit
-
 mine = pygame.transform.scale(mine, (cell_size, cell_size))
 
 # Create game and AI agent
@@ -184,20 +179,11 @@ while True:
         mouse = pygame.mouse.get_pos()
 
         # If AI button clicked, make an AI move
-        if aiButton.collidepoint(mouse) and not lost:
-            move = ai.make_safe_move()
-            if move is None:
-                move = ai.make_random_move()
-                if move is None:
-                    flags = ai.mines.copy()
-                    print("No moves left to make.")
-                else:
-                    print("No known safe moves, AI making random move.")
-            else:
-                print("AI making safe move.")
-            time.sleep(0.2)
+        # if aiButton.collidepoint(mouse) and not lost:
 
         # Reset game state
+        if aiButton.collidepoint(mouse) and not lost:
+            pass
         elif resetButton.collidepoint(mouse):
             game = Minesweeper(height=HEIGHT, width=WIDTH, mines=MINES)
             ai = MinesweeperAI(height=HEIGHT, width=WIDTH)
@@ -214,7 +200,17 @@ while True:
                             and (i, j) not in flags
                             and (i, j) not in revealed):
                         move = (i, j)
-
+    if not lost and game.mines != flags:
+        move = ai.make_safe_move()
+        if move is None:
+            move = ai.make_random_move()
+            if move is None:
+                flags = ai.mines.copy()
+                print("No moves left to make.")
+            else:
+                print("No known safe moves, AI making random move.")
+        else:
+            print("AI making safe move.")
     # Make move and update AI knowledge
     if move:
         if game.is_mine(move):
@@ -223,5 +219,5 @@ while True:
             nearby = game.nearby_mines(move)
             revealed.add(move)
             ai.add_knowledge(move, nearby)
-
+    
     pygame.display.flip()

@@ -105,7 +105,7 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        if len(self.cells) == 1 or len(self.cells) == self.count:
+        if (len(self.cells) == 1 and self.count != 0) or len(self.cells) == self.count:
             return self.cells
         return set()
 
@@ -209,18 +209,27 @@ class MinesweeperAI():
         tempSafeSpots = []
         tempMineSpots = []
 
-        for sentence in self.knowledge:
-            for safeSpot in sentence.known_safes():
+        while (True):
+            isNewMine = False
+            for sentence in self.knowledge:
+                for safeSpot in sentence.known_safes():
+                    tempSafeSpots.append(safeSpot)
+                for mineSpot in sentence.known_mines():
+                    isNewMine = True
+                    print(f"Because {sentence}, {mineSpot} is a mine.")
+                    tempMineSpots.append(mineSpot)
+                
+            for safeSpot in self.safes:
                 tempSafeSpots.append(safeSpot)
-            for mineSpot in sentence.known_mines():
-                print(f"Because {sentence}, {mineSpot} is a mine.")
+            for mineSpot in self.mines:
                 tempMineSpots.append(mineSpot)
 
-        for safeSpot in tempSafeSpots:
-            self.mark_safe(safeSpot)
-        for mineSpot in tempMineSpots:
-            self.mark_mine(mineSpot)
-
+            for safeSpot in tempSafeSpots:
+                self.mark_safe(safeSpot)
+            for mineSpot in tempMineSpots:
+                self.mark_mine(mineSpot)
+            if not isNewMine:
+                break
         for sentence1 in self.knowledge:
             if sentence1 is not newSentence:
                 if newSentence.cells.issubset(sentence1.cells):
@@ -236,11 +245,6 @@ class MinesweeperAI():
                                 newSentenceCount))
 
     def make_safe_move(self):
-        #!Change Font Path
-        #!Change Font Path
-        #!Change Font Path
-
-
         """
         Returns a safe cell to choose on the Minesweeper board.
         The move must be known to be safe, and not already a move
@@ -250,6 +254,15 @@ class MinesweeperAI():
         and self.moves_made, but should not modify any of those values.
         """
         for safeSpot in self.safes:
+            removed = False
+            try:
+                self.mines.remove(safeSpot)
+                removed = True
+            except KeyError:
+                pass
+            if removed:
+                newLine = "\n"
+                print(f"{safeSpot} used to marked as a mine.{newLine * 10}")
             if safeSpot not in self.moves_made:
                 print(f"\nMove made: {safeSpot}")
                 print(f"Known Mines: {self.mines}")
