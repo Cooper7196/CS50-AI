@@ -105,7 +105,8 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        if (len(self.cells) == 1 and self.count != 0) or len(self.cells) == self.count:
+        if (len(self.cells) == 1 and self.count !=
+                0) or len(self.cells) == self.count:
             return self.cells
         return set()
 
@@ -202,7 +203,6 @@ class MinesweeperAI():
                             cell[1] + j < self.width):
                         adjacentPlaces.append((cell[0] + i, cell[1] + j))
 
-        # print(f"{adjacentPlaces}, {self.height}, {self.width}")
         newSentence = Sentence(adjacentPlaces, count)
         self.knowledge.append(newSentence)
 
@@ -216,9 +216,8 @@ class MinesweeperAI():
                     tempSafeSpots.append(safeSpot)
                 for mineSpot in sentence.known_mines():
                     isNewMine = True
-                    print(f"Because {sentence}, {mineSpot} is a mine.")
                     tempMineSpots.append(mineSpot)
-                
+
             for safeSpot in self.safes:
                 tempSafeSpots.append(safeSpot)
             for mineSpot in self.mines:
@@ -230,19 +229,20 @@ class MinesweeperAI():
                 self.mark_mine(mineSpot)
             if not isNewMine:
                 break
+
         for sentence1 in self.knowledge:
-            if sentence1 is not newSentence:
-                if newSentence.cells.issubset(sentence1.cells):
-                    newSentenceCells = set(
-                        [i for i in sentence1.cells if i not in newSentence.cells])
-                    newSentenceCount = sentence1.count - newSentence.count
-                    if len(
-                            newSentenceCells) > 1 and newSentenceCells not in [i.cells for i in self.knowledge]:
-                        print(len(self.knowledge))
-                        self.knowledge.append(
-                            Sentence(
-                                newSentenceCells,
-                                newSentenceCount))
+            for sentence2 in self.knowledge:
+                if sentence1 is not sentence2:
+                    if sentence2.cells.issubset(sentence1.cells):
+                        sentence2Cells = set(
+                            [i for i in sentence1.cells if i not in sentence2.cells])
+                        sentence2Count = sentence1.count - sentence2.count
+                        if len(sentence2Cells) > 1 and sentence2Cells not in [
+                                i.cells for i in self.knowledge]:
+                            self.knowledge.append(
+                                Sentence(
+                                    sentence2Cells,
+                                    sentence2Count))
 
     def make_safe_move(self):
         """
@@ -254,18 +254,7 @@ class MinesweeperAI():
         and self.moves_made, but should not modify any of those values.
         """
         for safeSpot in self.safes:
-            removed = False
-            try:
-                self.mines.remove(safeSpot)
-                removed = True
-            except KeyError:
-                pass
-            if removed:
-                newLine = "\n"
-                print(f"{safeSpot} used to marked as a mine.{newLine * 10}")
             if safeSpot not in self.moves_made:
-                print(f"\nMove made: {safeSpot}")
-                print(f"Known Mines: {self.mines}")
                 return safeSpot
         return None
 
@@ -283,8 +272,6 @@ class MinesweeperAI():
                     options.append((h, w))
         if len(options) > 0:
             moveChoice = random.choice(options)
-            print(f"\nMove made: {moveChoice}")
-            print(f"Known Mines: {self.mines}")
             return moveChoice
         else:
             return None

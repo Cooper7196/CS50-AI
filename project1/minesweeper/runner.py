@@ -179,11 +179,20 @@ while True:
         mouse = pygame.mouse.get_pos()
 
         # If AI button clicked, make an AI move
-        # if aiButton.collidepoint(mouse) and not lost:
+        if aiButton.collidepoint(mouse) and not lost:
+            move = ai.make_safe_move()
+            if move is None:
+                move = ai.make_random_move()
+                if move is None:
+                    flags = ai.mines.copy()
+                    print("No moves left to make.")
+                else:
+                    print("No known safe moves, AI making random move.")
+            else:
+                print("AI making safe move.")
+            time.sleep(0.2)
 
         # Reset game state
-        if aiButton.collidepoint(mouse) and not lost:
-            pass
         elif resetButton.collidepoint(mouse):
             game = Minesweeper(height=HEIGHT, width=WIDTH, mines=MINES)
             ai = MinesweeperAI(height=HEIGHT, width=WIDTH)
@@ -200,17 +209,7 @@ while True:
                             and (i, j) not in flags
                             and (i, j) not in revealed):
                         move = (i, j)
-    if not lost and game.mines != flags:
-        move = ai.make_safe_move()
-        if move is None:
-            move = ai.make_random_move()
-            if move is None:
-                flags = ai.mines.copy()
-                print("No moves left to make.")
-            else:
-                print("No known safe moves, AI making random move.")
-        else:
-            print("AI making safe move.")
+
     # Make move and update AI knowledge
     if move:
         if game.is_mine(move):
@@ -219,5 +218,5 @@ while True:
             nearby = game.nearby_mines(move)
             revealed.add(move)
             ai.add_knowledge(move, nearby)
-    
+
     pygame.display.flip()
