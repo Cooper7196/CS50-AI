@@ -4,7 +4,7 @@ import re
 import sys
 
 DAMPING = 0.85
-SAMPLES = 10000
+SAMPLES = 100000
 
 
 def main():
@@ -84,12 +84,16 @@ def sample_pagerank(corpus, damping_factor, n):
     PageRank values should sum to 1.
     """
     output = {page: 0 for page in corpus.keys()}
-    page = random.choice(corpus.keys())
+    page = random.choice(list(corpus.keys()))
+    output[page] += 1
     for i in range(n):
         currentProbabilities = transition_model(corpus, page, damping_factor)
         page = random.choices(
-            currentProbabilities.keys(),
-            currentProbabilities.values())
+            list(currentProbabilities.keys()),
+            list(currentProbabilities.values()))[0]
+        output[page] += 1
+    output = {k:v / n for k, v in output.items()}
+    return output
 
 
 
