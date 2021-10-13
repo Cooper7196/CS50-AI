@@ -61,10 +61,10 @@ def transition_model(corpus, page, damping_factor):
     amountOfPages = len(corpus.keys())
     linkedPages = corpus[page]
 
-    output = {page:0 for page in corpus.keys()}
-
     if len(linkedPages) == 0:
         linkedPages = corpus.keys()
+    output = {page:0 for page in corpus.keys()}
+
     for page in linkedPages:
         output[page] = damping_factor / len(linkedPages)
 
@@ -106,8 +106,18 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    totalPages = len(corpus.keys())
+    output = {page: 1 / totalPages for page in corpus.keys()}
 
+    for page in corpus.keys():
+        linkedPages = corpus[page]
+        if len(linkedPages) == 0:
+            linkedPages = corpus.keys()
+        minimumProbability = ((1 - damping_factor) / totalPages)
+        for linkedPage in linkedPages:
+            pass
+        
+    return output
 
 if __name__ == "__main__":
     main()
