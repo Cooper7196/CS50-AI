@@ -1,3 +1,5 @@
+import copy
+import math
 import os
 import random
 import re
@@ -107,17 +109,40 @@ def iterate_pagerank(corpus, damping_factor):
     PageRank values should sum to 1.
     """
     totalPages = len(corpus.keys())
+    oldOutput = {page: 0 for page in corpus.keys()}
     output = {page: 1 / totalPages for page in corpus.keys()}
+    totalIterations = 0
+    while True:
+        newOutputs = {}
+        for page in corpus.keys():
+            minimumProbability = ((1 - damping_factor) / totalPages)
+            summationPobability = 0
+            for linkingPage in corpus.keys():
+                linkedPages = list(corpus[linkingPage])
 
-    for page in corpus.keys():
-        linkedPages = corpus[page]
-        if len(linkedPages) == 0:
-            linkedPages = corpus.keys()
-        minimumProbability = ((1 - damping_factor) / totalPages)
-        for linkedPage in linkedPages:
-            pass
-        
-    return output
-
+                if len(linkedPages) == 0:
+                    linkedPages = list(corpus.keys())
+                if len(linkedPages) == 1 and linkedPages[0] == linkingPage:
+                    print("test")
+                    linkedPages = corpus.keys()
+                if linkingPage == "recursion.html":
+                    print(len(linkedPages))
+                if page in corpus[linkingPage]:
+                    summationPobability += output[linkingPage] / len(linkedPages)
+            newOutputs[page] = minimumProbability + (damping_factor * summationPobability)
+            
+        for k, v in newOutputs.items():
+            output[k] = v
+        totalIterations += 1
+        isSettled = True
+        differences = {}
+        for k, v in output.items():
+            differences[k] = abs(oldOutput[k] - v)
+            if abs(oldOutput[k] - v) > 0.001:
+                isSettled = False
+        if isSettled:
+            print(sum(output.values()))
+            return output
+        oldOutput = copy.deepcopy(output)
 if __name__ == "__main__":
     main()
