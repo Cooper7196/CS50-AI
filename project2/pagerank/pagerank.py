@@ -1,12 +1,11 @@
 import copy
-import math
 import os
 import random
 import re
 import sys
 
 DAMPING = 0.85
-SAMPLES = 100000
+SAMPLES = 10000
 
 
 def main():
@@ -119,15 +118,9 @@ def iterate_pagerank(corpus, damping_factor):
             summationPobability = 0
             for linkingPage in corpus.keys():
                 linkedPages = list(corpus[linkingPage])
-
                 if len(linkedPages) == 0:
                     linkedPages = list(corpus.keys())
-                if len(linkedPages) == 1 and linkedPages[0] == linkingPage:
-                    print("test")
-                    linkedPages = corpus.keys()
-                if linkingPage == "recursion.html":
-                    print(len(linkedPages))
-                if page in corpus[linkingPage]:
+                if page in linkedPages:
                     summationPobability += output[linkingPage] / len(linkedPages)
             newOutputs[page] = minimumProbability + (damping_factor * summationPobability)
             
@@ -141,7 +134,6 @@ def iterate_pagerank(corpus, damping_factor):
             if abs(oldOutput[k] - v) > 0.001:
                 isSettled = False
         if isSettled:
-            print(sum(output.values()))
             return output
         oldOutput = copy.deepcopy(output)
 if __name__ == "__main__":
