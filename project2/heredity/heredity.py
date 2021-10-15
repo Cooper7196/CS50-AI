@@ -38,7 +38,6 @@ PROBS = {
 
 
 def main():
-
     # Check for proper usage
     if len(sys.argv) != 2:
         sys.exit("Usage: python heredity.py data.csv")
@@ -139,6 +138,28 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
+    probabilies = []
+
+    for person in one_gene:
+        personData = people[person]
+        if not (personData["mother"] or personData["Father"]):
+            probabilies.append(PROBS["gene"][1])
+        else:
+            parents = (personData["mother"], personData["Father"])
+            while True:
+                for parent in parents:
+                    parentData = people[parent]
+                    if not (personData["mother"] or personData["Father"]):
+                    
+
+
+
+    for person in two_genes:
+        personData = people[person]
+        if not (personData["mother"] or personData["Father"]):
+            probabilies.append(PROBS["gene"][2])
+        
+
     raise NotImplementedError
 
 
