@@ -138,23 +138,43 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
-    one_gene_probabilies = {}
 
-    for person in one_gene:
-        personData = people[person]
-        if not (personData["mother"] or personData["Father"]):
-            one_gene_probabilies[person] = PROBS["gene"][1]
+    probability = 1
+
+    for person in people:
+        personInfo = people[person]
+
+        geneNumber = 2 if person in two_genes else 1 if person in one_gene else 0
+        hasTrait = True if person in have_trait else False
+
+        if not personInfo["mother"]:
+            probability *= PROBS["gene"][geneNumber]
+            probability *= PROBS["trait"][geneNumber][hasTrait]
         else:
-            parents = (personData["mother"], personData["Father"])
-            while True:
-                for parent in parents:
-                    parentData = people[parent]
-                    if not (personData["mother"] or personData["Father"]):
-                        one_gene_probabilies[parent] = PROBS["gene"][1]
-                        
-        
+            parentProbability = {}
 
-    raise NotImplementedError
+            mother = personInfo["mother"]
+            father = personInfo["father"]
+
+            for parent in (mother, father):
+                parentGeneNumber = 2 if parent in two_genes else 1 if parent in one_gene else 0
+                parentProbability[parent] = \
+                    1 - PROBS["mutation"] if parentGeneNumber == 0 else \
+                    0.5 if parentGeneNumber == 1 else PROBS["mutation"]
+
+            if geneNumber == 0:
+                probability *= 1 - parentProbability[mother]
+                probability *= 1 - parentProbability[father]
+
+            if geneNumber == 1:
+                # Only one parent passed on gene
+                probability *= (parentProbability[mother] * (1 - parentProbability[father])) + (parentProbability[father] * (1 - parentProbability[mother]))
+            
+            if geneNumber == 2:
+                probability *= parentProbability[mother]
+                probability *= parentProbability[father]
+
+
 
 
 def update(probabilities, one_gene, two_genes, have_trait, p):
