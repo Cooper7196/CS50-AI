@@ -64,7 +64,7 @@ def transition_model(corpus, page, damping_factor):
 
     if len(linkedPages) == 0:
         linkedPages = corpus.keys()
-    output = {page:0 for page in corpus.keys()}
+    output = {page: 0 for page in corpus.keys()}
 
     for page in linkedPages:
         output[page] = damping_factor / len(linkedPages)
@@ -93,9 +93,8 @@ def sample_pagerank(corpus, damping_factor, n):
             list(currentProbabilities.keys()),
             list(currentProbabilities.values()))[0]
         output[page] += 1
-    output = {k:v / n for k, v in output.items()}
+    output = {k: v / n for k, v in output.items()}
     return output
-
 
 
 def iterate_pagerank(corpus, damping_factor):
@@ -121,9 +120,11 @@ def iterate_pagerank(corpus, damping_factor):
                 if len(linkedPages) == 0:
                     linkedPages = list(corpus.keys())
                 if page in linkedPages:
-                    summationPobability += output[linkingPage] / len(linkedPages)
-            newOutputs[page] = minimumProbability + (damping_factor * summationPobability)
-            
+                    summationPobability += output[linkingPage] / \
+                        len(linkedPages)
+            newOutputs[page] = minimumProbability + \
+                (damping_factor * summationPobability)
+
         for k, v in newOutputs.items():
             output[k] = v
         totalIterations += 1
@@ -136,5 +137,7 @@ def iterate_pagerank(corpus, damping_factor):
         if isSettled:
             return output
         oldOutput = copy.deepcopy(output)
+
+
 if __name__ == "__main__":
     main()
