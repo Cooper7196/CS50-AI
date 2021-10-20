@@ -14,6 +14,10 @@ class CrosswordCreator():
             var: self.crossword.words.copy()
             for var in self.crossword.variables
         }
+        self.enforce_node_consistency()
+        print(f"\n{self.domains}\n")
+        self.revise(list(self.domains.keys())[0], list(self.domains.keys())[1])
+        print(f"\n{self.domains}\n")
 
     def letter_grid(self, assignment):
         """
@@ -99,7 +103,13 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        raise NotImplementedError
+        for domain in self.domains:
+            invalidWords = set()
+            for word in self.domains[domain]:
+                if len(word) != domain.length:
+                    invalidWords.add(word)
+            for invalidWord in invalidWords:
+                self.domains[domain].remove(invalidWord)
 
     def revise(self, x, y):
         """
@@ -110,7 +120,21 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        raise NotImplementedError
+        invalidWords = set()
+        revised = False
+        for xWord in self.domains[x]:
+            for yWord in self.domains[y]:
+                overlapIndexes = self.crossword.overlaps[(x, y)]
+                if not overlapIndexes:
+                    continue
+                print(f"\nOverlap Indexes: {overlapIndexes}\n")
+                if xWord[overlapIndexes[0]] != yWord[[overlapIndexes[1]]]:
+                    revised = True
+
+        for invalidWord in invalidWords:
+            self.domains[x].remove(invalidWord)
+
+        return revised
 
     def ac3(self, arcs=None):
         """
