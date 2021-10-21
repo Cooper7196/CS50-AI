@@ -1,5 +1,6 @@
 import sys
-
+from queue import Queue
+from pprint import pprint
 from crossword import *
 
 
@@ -16,7 +17,7 @@ class CrosswordCreator():
         }
         self.enforce_node_consistency()
         print(f"\n{self.domains}\n")
-        self.revise(list(self.domains.keys())[0], list(self.domains.keys())[1])
+        print(self.ac3())
         print(f"\n{self.domains}\n")
 
     def letter_grid(self, assignment):
@@ -122,18 +123,21 @@ class CrosswordCreator():
         """
         invalidWords = set()
         revised = False
+
+        overlapIndexes = self.crossword.overlaps[(x, y)]
         for xWord in self.domains[x]:
+            xWordInvalid = True
             for yWord in self.domains[y]:
-                overlapIndexes = self.crossword.overlaps[(x, y)]
                 if not overlapIndexes:
                     continue
-                print(f"\nOverlap Indexes: {overlapIndexes}\n")
-                if xWord[overlapIndexes[0]] != yWord[[overlapIndexes[1]]]:
+                if xWord[overlapIndexes[0]] == yWord[overlapIndexes[1]]:
                     revised = True
-
+                    xWordInvalid = False
+            if xWordInvalid:
+                invalidWords.add(xWord)
         for invalidWord in invalidWords:
             self.domains[x].remove(invalidWord)
-
+        
         return revised
 
     def ac3(self, arcs=None):
@@ -145,7 +149,23 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        raise NotImplementedError
+        arcQueue = Queue()
+        if not arcs:
+            arcs = [domain for domain in self.domains]
+        for x in arcs:
+            for y in self.crossword.neighbors(x):
+                if x is not y:
+                    arcQueue.put((x, y))
+        pprint(list(arcQueue.queue))
+
+        while not arcQueue.empty():
+            x, y = arcQueue.get()
+            if self.revise(x, y):
+                if len(self.domains[x]) == 0:
+                    return False
+                for neighbor in (self.crossword.neighbors(x) - {y}):
+                    arcQueue.put((neighbor, x))
+        return True
 
     def assignment_complete(self, assignment):
         """
