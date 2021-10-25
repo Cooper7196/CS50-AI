@@ -131,13 +131,13 @@ class CrosswordCreator():
                 if not overlapIndexes:
                     continue
                 if xWord[overlapIndexes[0]] == yWord[overlapIndexes[1]]:
-                    revised = True
                     xWordInvalid = False
             if xWordInvalid:
+                revised = True
                 invalidWords.add(xWord)
         for invalidWord in invalidWords:
             self.domains[x].remove(invalidWord)
-        
+
         return revised
 
     def ac3(self, arcs=None):
@@ -172,14 +172,32 @@ class CrosswordCreator():
         Return True if `assignment` is complete (i.e., assigns a value to each
         crossword variable); return False otherwise.
         """
-        raise NotImplementedError
+        for variable in self.crossword.variables:
+            if variable not in assignment:
+                return False
+        return True
 
     def consistent(self, assignment):
         """
         Return True if `assignment` is consistent (i.e., words fit in crossword
         puzzle without conflicting characters); return False otherwise.
         """
-        raise NotImplementedError
+        if len(assignment.keys()) != len(set(assignment.keys())):
+            return False
+        if not self.assignment_complete(assignment):
+            return False
+
+        for variableOne, wordOne in assignment.items():
+            for variableTwo, wordTwo in assignment.items():
+                if variableOne is not variableTwo:
+                    overlapIndexes = self.crossword.overlaps[(
+                        variableOne, variableTwo)]
+                    if not overlapIndexes:
+                        continue
+                    if wordOne[overlapIndexes[0]
+                               ] != wordTwo[overlapIndexes[1]]:
+                        return False
+        return True
 
     def order_domain_values(self, var, assignment):
         """
