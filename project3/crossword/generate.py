@@ -15,10 +15,6 @@ class CrosswordCreator():
             var: self.crossword.words.copy()
             for var in self.crossword.variables
         }
-        self.enforce_node_consistency()
-        print(f"\n{self.domains}\n")
-        print(self.ac3())
-        print(f"\n{self.domains}\n")
 
     def letter_grid(self, assignment):
         """
@@ -94,9 +90,15 @@ class CrosswordCreator():
         """
         Enforce node and arc consistency, and then solve the CSP.
         """
+
+        # print(self.consistent({   Variable(5, 1, 'across', 3): 'HIS', Variable(1, 3, 'down', 5): 'YOURS', Variable(0, 6, 'down', 6): 'MUSEUM', Variable(2, 3, 'across', 4): 'ODDS', Variable(1, 0, 'down', 4): 'BIKE', Variable(1, 0, 'across', 4): 'BIKE'}))
+
+
         self.enforce_node_consistency()
         self.ac3()
-        return self.backtrack(dict())
+        result = self.backtrack(dict())
+        print(result)
+        return result
 
     def enforce_node_consistency(self):
         """
@@ -156,7 +158,6 @@ class CrosswordCreator():
             for y in self.crossword.neighbors(x):
                 if x is not y:
                     arcQueue.put((x, y))
-        pprint(list(arcQueue.queue))
 
         while not arcQueue.empty():
             x, y = arcQueue.get()
@@ -182,11 +183,12 @@ class CrosswordCreator():
         Return True if `assignment` is consistent (i.e., words fit in crossword
         puzzle without conflicting characters); return False otherwise.
         """
-        if len(assignment.keys()) != len(set(assignment.keys())):
-            return False
-        if not self.assignment_complete(assignment):
+        # Check that there are no duplicate words in the assignment
+        if len(assignment.values()) != len(set(assignment.values())):
             return False
 
+
+        # Check that each word in the assignment is not conflicting
         for variableOne, wordOne in assignment.items():
             for variableTwo, wordTwo in assignment.items():
                 if variableOne is not variableTwo:
@@ -198,7 +200,7 @@ class CrosswordCreator():
                                ] != wordTwo[overlapIndexes[1]]:
                         return False
         return True
-
+    
     def order_domain_values(self, var, assignment):
         """
         Return a list of values in the domain of `var`, in order by
@@ -216,8 +218,7 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-
-        return sorted(self.domains.values(), key= lambda x: len(self.domains[x]))[0]
+        return [var for var in sorted(self.domains.keys(), key= lambda x: len(self.domains[x])) if var not in assignment][0]
 
     def backtrack(self, assignment):
         """
@@ -228,7 +229,21 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        
+        if self.assignment_complete(assignment):
+            return assignment
+        variable = self.select_unassigned_variable(assignment)
+
+        for value in self.order_domain_values(variable, assignment):
+            if self.consistent(assignment):
+                assignment[variable] = value
+                result = self.backtrack(assignment)
+                if result and self.consistent(result):
+                    return result
+                del assignment[variable]
+        return None
+        
+                
 
 
 def main():
