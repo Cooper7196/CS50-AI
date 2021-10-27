@@ -91,8 +91,6 @@ class CrosswordCreator():
         Enforce node and arc consistency, and then solve the CSP.
         """
 
-        # print(self.consistent({   Variable(5, 1, 'across', 3): 'HIS', Variable(1, 3, 'down', 5): 'YOURS', Variable(0, 6, 'down', 6): 'MUSEUM', Variable(2, 3, 'across', 4): 'ODDS', Variable(1, 0, 'down', 4): 'BIKE', Variable(1, 0, 'across', 4): 'BIKE'}))
-
 
         self.enforce_node_consistency()
         self.ac3()
@@ -201,6 +199,16 @@ class CrosswordCreator():
                         return False
         return True
     
+
+    #find how many values are contrained by an assignment
+    def num_constrained_values(self, var, word, assignment):
+        count = 0
+        if word not in assignment:
+            for neighbor in self.crossword.neighbors(var):
+                if word in self.domains[neighbor]:
+                    count += 1
+        return count
+
     def order_domain_values(self, var, assignment):
         """
         Return a list of values in the domain of `var`, in order by
@@ -208,8 +216,9 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        return list(self.domains[var])
-
+        
+        return sorted(list(self.domains[var]), key=lambda word: self.num_constrained_values(var, word, assignment))
+    
     def select_unassigned_variable(self, assignment):
         """
         Return an unassigned variable not already part of `assignment`.
@@ -218,7 +227,9 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        return [var for var in sorted(self.domains.keys(), key= lambda x: len(self.domains[x])) if var not in assignment][0]
+        unassignedVariables = [variable for variable in self.crossword.variables if variable not in assignment]
+        unassignedVariables.sort(key=lambda x: (len(self.domains[x]), len(self.crossword.neighbors(x))))
+        return unassignedVariables[0]
 
     def backtrack(self, assignment):
         """
