@@ -90,8 +90,6 @@ class CrosswordCreator():
         """
         Enforce node and arc consistency, and then solve the CSP.
         """
-
-
         self.enforce_node_consistency()
         self.ac3()
         result = self.backtrack(dict())
@@ -185,7 +183,6 @@ class CrosswordCreator():
         if len(assignment.values()) != len(set(assignment.values())):
             return False
 
-
         # Check that each word in the assignment is not conflicting
         for variableOne, wordOne in assignment.items():
             for variableTwo, wordTwo in assignment.items():
@@ -198,9 +195,9 @@ class CrosswordCreator():
                                ] != wordTwo[overlapIndexes[1]]:
                         return False
         return True
-    
 
-    #find how many values are contrained by an assignment
+    # Find how many values are contrained by an assignment
+
     def num_constrained_values(self, var, word, assignment):
         count = 0
         if word not in assignment:
@@ -216,9 +213,9 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        
+
         return sorted(list(self.domains[var]), key=lambda word: self.num_constrained_values(var, word, assignment))
-    
+
     def select_unassigned_variable(self, assignment):
         """
         Return an unassigned variable not already part of `assignment`.
@@ -240,7 +237,7 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        
+
         if self.assignment_complete(assignment):
             return assignment
         variable = self.select_unassigned_variable(assignment)
@@ -253,8 +250,6 @@ class CrosswordCreator():
                     return result
                 del assignment[variable]
         return None
-        
-                
 
 
 def main():
