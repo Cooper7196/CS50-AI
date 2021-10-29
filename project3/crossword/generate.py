@@ -1,6 +1,5 @@
 import sys
 from queue import Queue
-from pprint import pprint
 from crossword import *
 
 
@@ -93,7 +92,6 @@ class CrosswordCreator():
         self.enforce_node_consistency()
         self.ac3()
         result = self.backtrack(dict())
-        print(result)
         return result
 
     def enforce_node_consistency(self):
