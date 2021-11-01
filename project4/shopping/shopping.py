@@ -1,3 +1,4 @@
+import calendar
 import csv
 import sys
 
@@ -59,8 +60,47 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
 
+    monthToNum = {
+        'Jan': 0,
+        'Feb': 1,
+        'Mar': 2,
+        'Apr': 3,
+        'May': 4,
+        'June': 5,
+        'Jul': 6,
+        'Aug': 7,
+        'Sep': 8,
+        'Oct': 9,
+        'Nov': 10,
+        'Dec': 11
+    }
+
+    floatColumns = (1, 3, 5, 6, 7, 8, 9)
+    intColumns = (0, 2, 4, 11, 12, 13, 14)
+    evidence = []
+    labels = []
+
+    with open(filename, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in list(reader)[1:]:
+            evidence.append(row[:-1])
+            labels.append(row[-1])
+        for row in evidence:
+            for i in range(len(row)):
+                if i in floatColumns:
+                    row[i] = float(row[i])
+                elif i in intColumns:
+                    row[i] = int(row[i])
+                if i == 10:
+                    row[i] = monthToNum[row[i]]
+                if i == 15:
+                    row[i] = int(row[i] == 'Returning_Visitor')
+                if i == 16:
+                    row[i] = int(row[i] == 'TRUE')
+
+        labels = [int(label == 'TRUE') for label in labels]
+    return (evidence, labels)
 
 def train_model(evidence, labels):
     """
