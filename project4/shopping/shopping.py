@@ -102,12 +102,15 @@ def load_data(filename):
         labels = [int(label == 'TRUE') for label in labels]
     return (evidence, labels)
 
+
 def train_model(evidence, labels):
     """
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
+    classifier = KNeighborsClassifier(n_neighbors=1)
+    classifier.fit(evidence, labels)
+    return classifier
 
 
 def evaluate(labels, predictions):
@@ -125,6 +128,13 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
+    sensitivity = sum([int(labels[i] == predictions[i]) for i in range(
+        len(labels)) if labels[i]]) / len([label for label in labels if label])
+
+    specificity = sum([int(labels[i] == predictions[i]) for i in range(
+        len(labels)) if not labels[i]]) / len([label for label in labels if not label])
+
+    return (sensitivity, specificity)
     raise NotImplementedError
 
 
