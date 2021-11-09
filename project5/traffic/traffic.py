@@ -35,7 +35,7 @@ def main():
     model.fit(x_train, y_train, epochs=EPOCHS)
 
     # Evaluate neural network performance
-    model.evaluate(x_test,  y_test, verbose=2)
+    model.evaluate(x_test, y_test, verbose=2)
 
     # Save model to file
     if len(sys.argv) == 3:
@@ -58,9 +58,16 @@ def load_data(data_dir):
     be a list of integer labels, representing the categories for each of the
     corresponding `images`.
     """
-    
-    
-    raise NotImplementedError
+    images = []
+    labels = []
+    for dir in os.listdir(data_dir):
+        for image in os.listdir(os.path.join(data_dir, dir)):
+            img = cv2.imread(os.path.join(data_dir, dir, image))
+            img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
+            images.append(img)
+            labels.append(int(dir))
+    print(type(images[0]))
+    return (images, labels)
 
 
 def get_model():
@@ -69,7 +76,46 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    raise NotImplementedError
+
+    model = tf.keras.models.Sequential()
+
+    model.add(
+        tf.keras.layers.Conv2D(
+            32, (3, 3), input_shape=(
+                IMG_WIDTH, IMG_HEIGHT, 3)))
+    
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(tf.keras.layers.Conv2D(32, (3, 3)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(tf.keras.layers.Conv2D(64, (3, 3)))
+    model.add(tf.keras.layers.Activation('relu'))
+    # model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+
+    # model.add(tf.keras.layers.Flatten())
+
+
+    model.add(tf.keras.layers.Conv2D(128, (3, 3)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(tf.keras.layers.Flatten())
+
+    model.add(tf.keras.layers.Dense(128))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Dropout(0.5))
+    model.add(tf.keras.layers.Dense(NUM_CATEGORIES))
+    model.add(tf.keras.layers.Activation('sigmoid'))
+
+    model.compile(loss='binary_crossentropy',
+                optimizer='rmsprop',
+                metrics=['accuracy'])
+    model.summary()
+
+    return model
 
 
 if __name__ == "__main__":
