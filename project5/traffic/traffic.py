@@ -87,24 +87,24 @@ def get_model():
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(tf.keras.layers.Conv2D(32, (3, 3)))
+    model.add(tf.keras.layers.Conv2D(64, (3, 3)))
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(tf.keras.layers.Conv2D(64, (3, 3)))
+    model.add(tf.keras.layers.Conv2D(128, (3, 3)))
     model.add(tf.keras.layers.Activation('relu'))
     # model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
     # model.add(tf.keras.layers.Flatten())
 
 
-    model.add(tf.keras.layers.Conv2D(128, (3, 3)))
+    model.add(tf.keras.layers.Conv2D(256, (3, 3)))
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
     model.add(tf.keras.layers.Flatten())
 
-    model.add(tf.keras.layers.Dense(128))
+    model.add(tf.keras.layers.Dense(256))
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.Dropout(0.5))
     model.add(tf.keras.layers.Dense(NUM_CATEGORIES))
