@@ -83,38 +83,32 @@ def get_model():
         tf.keras.layers.Conv2D(
             32, (3, 3), input_shape=(
                 IMG_WIDTH, IMG_HEIGHT, 3)))
-    
+
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
     model.add(tf.keras.layers.Conv2D(64, (3, 3)))
     model.add(tf.keras.layers.Activation('relu'))
-    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(tf.keras.layers.Conv2D(128, (3, 3)))
+    model.add(tf.keras.layers.Conv2D(64, (4, 4)))
     model.add(tf.keras.layers.Activation('relu'))
-    # model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
-    # model.add(tf.keras.layers.Flatten())
-
-
-    model.add(tf.keras.layers.Conv2D(256, (3, 3)))
+    model.add(tf.keras.layers.Conv2D(128, (4, 4)))
     model.add(tf.keras.layers.Activation('relu'))
-    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(3, 3)))
 
     model.add(tf.keras.layers.Flatten())
 
-    model.add(tf.keras.layers.Dense(256))
+    model.add(tf.keras.layers.Dense(128))
     model.add(tf.keras.layers.Activation('relu'))
-    model.add(tf.keras.layers.Dropout(0.5))
+    model.add(tf.keras.layers.Dropout(0.2))
     model.add(tf.keras.layers.Dense(NUM_CATEGORIES))
     model.add(tf.keras.layers.Activation('sigmoid'))
 
     model.compile(loss='binary_crossentropy',
-                optimizer='rmsprop',
-                metrics=['accuracy'])
-    model.summary()
-
+                  optimizer='rmsprop',
+                  metrics=['accuracy'])
     return model
 
 
