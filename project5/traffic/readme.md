@@ -1,0 +1,1 @@
+I experimented with many different layers in my neural network. I tried to use different activation functions, different loss functions, and different optimizers. I found that using a few convolution layers with increasing number of filters in each layer.
