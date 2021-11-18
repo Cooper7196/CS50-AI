@@ -87,7 +87,7 @@ def np_chunk(tree):
     """
     npChunks = []
     for subtree in tree.subtrees(filter=lambda x: x.label() == "NP"):
-        if len(list(subtree.subtrees(filter=lambda x: x.label() == "NP"))) == 0:
+        if len(list(subtree.subtrees(filter=lambda x: x.label() == "NP"))) == 1:
             npChunks.append(subtree)
 
     return npChunks
