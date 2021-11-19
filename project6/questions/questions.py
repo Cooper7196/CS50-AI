@@ -1,5 +1,8 @@
 import nltk
 import sys
+import os
+import string
+import math
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -48,7 +51,12 @@ def load_files(directory):
     Given a directory name, return a dictionary mapping the filename of each
     `.txt` file inside that directory to the file's contents as a string.
     """
-    raise NotImplementedError
+    files = {}
+    for file in os.listdir(directory):
+        if file.endswith(".txt"):
+            with open(os.path.join(directory, file), "r") as f:
+                files[file] = f.read()
+    return files
 
 
 def tokenize(document):
@@ -59,8 +67,16 @@ def tokenize(document):
     Process document by coverting all words to lowercase, and removing any
     punctuation or English stopwords.
     """
-    raise NotImplementedError
 
+    words = nltk.word_tokenize(document.lower())
+
+    # Remove punctuation
+    words = [word for word in words if not any(c in string.punctuation for c in word)]
+
+    #Remove stop words
+    words = [word for word in words if word not in nltk.corpus.stopwords.words('english')]
+
+    return words
 
 def compute_idfs(documents):
     """
@@ -70,7 +86,19 @@ def compute_idfs(documents):
     Any word that appears in at least one of the documents should be in the
     resulting dictionary.
     """
-    raise NotImplementedError
+    wordFrequencies = {}
+
+    for document in documents:
+        for word in documents[document]:
+            if word not in wordFrequencies:
+                wordFrequencies[word] = 0
+            wordFrequencies[word] += 1
+
+    idfs = {}
+    for word in wordFrequencies:
+        idfs[word] = math.log(len(documents) / wordFrequencies[word])
+            
+    return idfs
 
 
 def top_files(query, files, idfs, n):
@@ -80,6 +108,11 @@ def top_files(query, files, idfs, n):
     to their IDF values), return a list of the filenames of the the `n` top
     files that match the query, ranked according to tf-idf.
     """
+    tfIdfs = {}
+    for word in query:
+        for document in files:
+            tfIdfs[] = idfs[word] * files[document].count(word)
+                            
     raise NotImplementedError
 
 
