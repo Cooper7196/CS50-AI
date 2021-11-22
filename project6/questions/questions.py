@@ -3,7 +3,7 @@ import sys
 import os
 import string
 import math
-
+from pprint import pprint
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
 
@@ -132,11 +132,16 @@ def top_sentences(query, sentences, idfs, n):
             if word in sentences[sentence]:
                 sentenceIdfs[sentence] += idfs[word]
                 sentenceQueryDensity[sentence] += 1 / len(sentences[sentence])
-    
-    sortedSentences = sorted(sentences, key=lambda x: sentenceQueryDensity[x])
-    sortedSentences = sorted(sortedSentences, key=lambda x: sentenceIdfs[x])
+    pprint([(x, sentenceQueryDensity[x]) for x in (sorted(sentences, key=lambda x: sentenceQueryDensity[x])) if sentenceQueryDensity[x] > 0])
+    sortedSentences = sorted(sentences, key=lambda x: sentenceQueryDensity[x], reverse=True)
+    sortedSentences = sorted(sortedSentences, key=lambda x: sentenceIdfs[x], reverse=True)
+    # print(sortedSentences)
+
     return sortedSentences[:n]
 
 
 if __name__ == "__main__":
     main()
+
+
+# What are the types of supervised learning?
