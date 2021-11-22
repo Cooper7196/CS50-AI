@@ -54,7 +54,7 @@ def load_files(directory):
     files = {}
     for file in os.listdir(directory):
         if file.endswith(".txt"):
-            with open(os.path.join(directory, file), "r") as f:
+            with open(os.path.join(directory, file), "r", encoding="utf-8") as f:
                 files[file] = f.read()
     return files
 
@@ -108,12 +108,13 @@ def top_files(query, files, idfs, n):
     to their IDF values), return a list of the filenames of the the `n` top
     files that match the query, ranked according to tf-idf.
     """
-    tfIdfs = {}
+    tfIdfs = {document: 0 for document in files}
+
     for word in query:
         for document in files:
-            tfIdfs[] = idfs[word] * files[document].count(word)
-                            
-    raise NotImplementedError
+            tfIdfs[document] += idfs[word] * files[document].count(word)
+    print(sorted(files, key=lambda x: tfIdfs[x])[:5])
+    return sorted(files, key=lambda x: tfIdfs[x])[:5]
 
 
 def top_sentences(query, sentences, idfs, n):
@@ -124,7 +125,17 @@ def top_sentences(query, sentences, idfs, n):
     the query, ranked according to idf. If there are ties, preference should
     be given to sentences that have a higher query term density.
     """
-    raise NotImplementedError
+    sentenceIdfs = {sentence: 0 for sentence in sentences}
+    sentenceQueryDensity = {sentence: 0 for sentence in sentences}
+    for word in query:
+        for sentence in sentences:
+            if word in sentences[sentence]:
+                sentenceIdfs[sentence] += idfs[word]
+                sentenceQueryDensity[sentence] += 1 / len(sentences[sentence])
+    
+    sortedSentences = sorted(sentences, key=lambda x: sentenceQueryDensity[x])
+    sortedSentences = sorted(sortedSentences, key=lambda x: sentenceIdfs[x])
+    return sortedSentences[:n]
 
 
 if __name__ == "__main__":
