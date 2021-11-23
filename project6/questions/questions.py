@@ -113,7 +113,6 @@ def top_files(query, files, idfs, n):
     for word in query:
         for document in files:
             tfIdfs[document] += idfs[word] * files[document].count(word)
-    print(sorted(files, key=lambda x: tfIdfs[x])[:5])
     return sorted(files, key=lambda x: tfIdfs[x])[:5]
 
 
@@ -131,17 +130,12 @@ def top_sentences(query, sentences, idfs, n):
         for sentence in sentences:
             if word in sentences[sentence]:
                 sentenceIdfs[sentence] += idfs[word]
-                sentenceQueryDensity[sentence] += 1 / len(sentences[sentence])
-    pprint([(x, sentenceQueryDensity[x]) for x in (sorted(sentences, key=lambda x: sentenceQueryDensity[x])) if sentenceQueryDensity[x] > 0])
+                sentenceQueryDensity[sentence] += (1 / len(sentences[sentence])) * sentences[sentence].count(word)
     sortedSentences = sorted(sentences, key=lambda x: sentenceQueryDensity[x], reverse=True)
     sortedSentences = sorted(sortedSentences, key=lambda x: sentenceIdfs[x], reverse=True)
-    # print(sortedSentences)
 
     return sortedSentences[:n]
 
 
 if __name__ == "__main__":
     main()
-
-
-# What are the types of supervised learning?
